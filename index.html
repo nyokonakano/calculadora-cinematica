@@ -3,7 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <title>Calculadora de Cinemática</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        footer{
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background-color: #eee;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #27ae60;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .formulas {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .error {
+            color: #e74c3c;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -92,7 +194,90 @@
             <div id="mruv-result" class="result" style="display: none;"></div>
         </div>
     </div>
-
-    <script src="script.js"></script>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Calculadoras de Electrónica. Herramientas educativas para estudiantes y profesionales.</p>
+            <p>Desarrollado por Nyoko Nakano</p>
+            <div class="disclaimer">
+                <p><small>Nota: Esta calculadora es una herramienta educativa. Para aplicacion crítica, siempre verifique los cálculos con instrumentos de medición precisos.</small></p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        function showTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        
+            document.getElementById('mru-form').style.display = tab === 'mru' ? 'block' : 'none';
+            document.getElementById('mruv-form').style.display = tab === 'mruv' ? 'block' : 'none';
+        }
+        
+        function calcularMRU() {
+            const velocidad = parseFloat(document.getElementById('mru-velocidad').value);
+            const tiempo = parseFloat(document.getElementById('mru-tiempo').value);
+            const distancia = parseFloat(document.getElementById('mru-distancia').value);
+            const resultDiv = document.getElementById('mru-result');
+        
+            resultDiv.style.display = 'block';
+        
+            // Verificar qué valores se proporcionaron y calcular el faltante
+            if (!isNaN(velocidad) && !isNaN(tiempo) && isNaN(distancia)) {
+                const d = velocidad * tiempo;
+                resultDiv.innerHTML = `Distancia = ${d.toFixed(2)} m`;
+            } else if (!isNaN(distancia) && !isNaN(tiempo) && isNaN(velocidad)) {
+                const v = distancia / tiempo;
+                resultDiv.innerHTML = `Velocidad = ${v.toFixed(2)} m/s`;
+            } else if (!isNaN(distancia) && !isNaN(velocidad) && isNaN(tiempo)) {
+                const t = distancia / velocidad;
+                resultDiv.innerHTML = `Tiempo = ${t.toFixed(2)} s`;
+            } else {
+                resultDiv.innerHTML = 'Por favor, ingresa exactamente dos valores para calcular el tercero.';
+            }
+        }
+        
+        function calcularMRUV() {
+            const v0 = parseFloat(document.getElementById('mruv-v0').value);
+            const vf = parseFloat(document.getElementById('mruv-vf').value);
+            const a = parseFloat(document.getElementById('mruv-aceleracion').value);
+            const t = parseFloat(document.getElementById('mruv-tiempo').value);
+            const d = parseFloat(document.getElementById('mruv-distancia').value);
+            const resultDiv = document.getElementById('mruv-result');
+        
+            resultDiv.style.display = 'block';
+            let resultado = '';
+        
+            try {
+                // Diferentes casos según los valores proporcionados
+                if (!isNaN(v0) && !isNaN(a) && !isNaN(t)) {
+                    // Calcular velocidad final y distancia
+                    const vfinal = v0 + a * t;
+                    const dist = v0 * t + 0.5 * a * t * t;
+                    resultado = `Velocidad final = ${vfinal.toFixed(2)} m/s<br>Distancia = ${dist.toFixed(2)} m`;
+                } else if (!isNaN(v0) && !isNaN(vf) && !isNaN(a)) {
+                    // Calcular tiempo y distancia usando v² = v₀² + 2ad
+                    const dist = (vf * vf - v0 * v0) / (2 * a);
+                    const tiempo = (vf - v0) / a;
+                    resultado = `Tiempo = ${tiempo.toFixed(2)} s<br>Distancia = ${dist.toFixed(2)} m`;
+                } else if (!isNaN(v0) && !isNaN(vf) && !isNaN(t)) {
+                    // Calcular aceleración y distancia
+                    const acel = (vf - v0) / t;
+                    const dist = (v0 + vf) * t / 2;
+                    resultado = `Aceleración = ${acel.toFixed(2)} m/s²<br>Distancia = ${dist.toFixed(2)} m`;
+                } else if (!isNaN(v0) && !isNaN(vf) && !isNaN(d)) {
+                    // Calcular aceleración y tiempo
+                    const acel = (vf * vf - v0 * v0) / (2 * d);
+                    const tiempo = 2 * d / (v0 + vf);
+                    resultado = `Aceleración = ${acel.toFixed(2)} m/s²<br>Tiempo = ${tiempo.toFixed(2)} s`;
+                } else {
+                    resultado = 'Por favor, ingresa al menos tres valores para realizar los cálculos.';
+                }
+            } catch (error) {
+                resultado = 'Error en los cálculos. Verifica los valores ingresados.';
+            }
+        
+            resultDiv.innerHTML = resultado;
+        }
+    </script>
 </body>
 </html>
